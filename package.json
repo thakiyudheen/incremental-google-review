@@ -1,0 +1,16 @@
+{
+  "name": "incremental-google-review-scrap",
+  "version": "1.0.0",
+  "description": "Background script to incrementally scrape Google Maps reviews on a schedule",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "node-cron": "^3.0.3",
+    "puppeteer": "^25.3.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
