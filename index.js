@@ -47,7 +47,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const browser = await puppeteer.launch({
     // Headless must be true in production/Docker
-    headless: true , 
+    headless: "new", 
     userDataDir: path.join(__dirname, 'chrome_session'),
     // Let Puppeteer auto-detect the browser
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
@@ -74,7 +74,7 @@ const browser = await puppeteer.launch({
     try {
         console.log(`Navigating to Google Maps...`);
         const mapsUrl = process.env.GOOGLE_MAPS_URL || 'https://www.google.com/maps/place/Jobbatical/@59.4376249,24.7559448,17z/data=!4m12!1m2!2m1!1sSoftware+company!3m8!1s0x4692937dee7b8119:0x537449c59c834621!8m2!3d59.4376223!4d24.7608157!9m1!1b1!15sChBTb2Z0d2FyZSBjb21wYW55WhIiEHNvZnR3YXJlIGNvbXBhbnmSARBzb2Z0d2FyZV9jb21wYW554AEA!16s%2Fg%2F11b6q8qc67?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D';
-        await page.goto(mapsUrl, { waitUntil: 'networkidle2' });
+        await page.goto(mapsUrl, { waitUntil: 'domcontentloaded', timeout: 90000 });
         
         console.log(`Navigated to Google Map with Url...`);
 
