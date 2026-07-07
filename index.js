@@ -49,9 +49,8 @@ const browser = await puppeteer.launch({
     // Headless must be true in production/Docker
     headless: true , 
     userDataDir: path.join(__dirname, 'chrome_session'),
-    executablePath: isProduction 
-        ? process.env.PUPPETEER_EXECUTABLE_PATH 
-        : undefined, // Let Puppeteer find its local version during dev
+    // Let Puppeteer auto-detect the browser
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
