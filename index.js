@@ -47,10 +47,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const browser = await puppeteer.launch({
     // Headless must be true in production/Docker
-    headless: "new", 
+    headless: true , 
     userDataDir: path.join(__dirname, 'chrome_session'),
     // Let Puppeteer auto-detect the browser
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -73,8 +72,8 @@ const browser = await puppeteer.launch({
 
     try {
         console.log(`Navigating to Google Maps...`);
-        const mapsUrl = process.env.GOOGLE_MAPS_URL;
-        await page.goto(mapsUrl, { waitUntil: 'domcontentloaded', timeout: 90000 });
+        const mapsUrl = process.env.GOOGLE_MAPS_URL || 'https://www.google.com/maps/place/Jobbatical/@59.4376249,24.7559448,17z/data=!4m12!1m2!2m1!1sSoftware+company!3m8!1s0x4692937dee7b8119:0x537449c59c834621!8m2!3d59.4376223!4d24.7608157!9m1!1b1!15sChBTb2Z0d2FyZSBjb21wYW55WhIiEHNvZnR3YXJlIGNvbXBhbnmSARBzb2Z0d2FyZV9jb21wYW554AEA!16s%2Fg%2F11b6q8qc67?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D';
+        await page.goto(mapsUrl, { waitUntil: 'networkidle2' });
         
         console.log(`Navigated to Google Map with Url...`);
 
@@ -90,56 +89,56 @@ const browser = await puppeteer.launch({
             }
         } catch (e) { }
 
-        await page.waitForSelector('h1', { timeout: 15000 });
+        // await page.waitForSelector('h1', { timeout: 15000 });
 
         console.log('Looking for the "Reviews" tab...');
-        let clickedReviews = false;
+        let clickedReviews = true;
 
-        const tryFindReviewsTab = async () => {
-            const tabs = await page.$$('button[role="tab"]');
-            for (const tab of tabs) {
-                const text = await page.evaluate(el => el.textContent, tab);
-                if (text && text.includes('Reviews')) {
-                    await tab.click();
-                    return true;
-                }
-            }
-            return false;
-        };
+        // const tryFindReviewsTab = async () => {
+        //     const tabs = await page.$$('button[role="tab"]');
+        //     for (const tab of tabs) {
+        //         const text = await page.evaluate(el => el.textContent, tab);
+        //         if (text && text.includes('Reviews')) {
+        //             await tab.click();
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // };
 
-        // Try for up to 5 seconds to find the reviews tab or fallback (handling slow DOM renders)
-        for (let attempt = 0; attempt < 5; attempt++) {
-            clickedReviews = await tryFindReviewsTab();
-            if (clickedReviews) break;
+        // // Try for up to 5 seconds to find the reviews tab or fallback (handling slow DOM renders)
+        // for (let attempt = 0; attempt < 5; attempt++) {
+        //     clickedReviews = await tryFindReviewsTab();
+        //     if (clickedReviews) break;
 
-            try {
-                const fallbackBtn = await page.$('.wiquBf');
-                if (fallbackBtn) {
-                    console.log('Reviews tab not found immediately. Trying .wiquBf fallback...');
-                    await fallbackBtn.click();
-                    console.log('Clicked .wiquBf fallback, waiting for UI to update...');
-                    await new Promise(r => setTimeout(r, 2000));
-                    clickedReviews = await tryFindReviewsTab();
-                    if (clickedReviews) break;
-                }
-            } catch (e) {
-                console.log('Error clicking fallback: ' + e.message);
-            }
+        //     try {
+        //         const fallbackBtn = await page.$('.wiquBf');
+        //         if (fallbackBtn) {
+        //             console.log('Reviews tab not found immediately. Trying .wiquBf fallback...');
+        //             await fallbackBtn.click();
+        //             console.log('Clicked .wiquBf fallback, waiting for UI to update...');
+        //             await new Promise(r => setTimeout(r, 2000));
+        //             clickedReviews = await tryFindReviewsTab();
+        //             if (clickedReviews) break;
+        //         }
+        //     } catch (e) {
+        //         console.log('Error clicking fallback: ' + e.message);
+        //     }
 
-            console.log(`Reviews tab not found on attempt ${attempt + 1}. Waiting 1 second...`);
-            await new Promise(r => setTimeout(r, 1000));
-        }
+        //     console.log(`Reviews tab not found on attempt ${attempt + 1}. Waiting 1 second...`);
+        //     await new Promise(r => setTimeout(r, 1000));
+        // }
 
-        if (clickedReviews) {
-            console.log('Successfully opened Reviews section.');
-        } else {
-            console.log('Could not find the "Reviews" tab. Taking a screenshot for debugging...');
-            const screenshotBuffer = await page.screenshot({ fullPage: true });
+        // if (clickedReviews) {
+        //     console.log('Successfully opened Reviews section.');
+        // } else {
+        //     console.log('Could not find the "Reviews" tab. Taking a screenshot for debugging...');
+        //     const screenshotBuffer = await page.screenshot({ fullPage: true });
             
-            const error = new Error('Could not find the "Reviews" tab');
-            error.screenshot = screenshotBuffer;
-            throw error;
-        }
+        //     const error = new Error('Could not find the "Reviews" tab');
+        //     error.screenshot = screenshotBuffer;
+        //     throw error;
+        // }
 
         // Wait briefly for the reviews to load fully before scrolling
         // Wait briefly for the reviews to load fully before scrolling
