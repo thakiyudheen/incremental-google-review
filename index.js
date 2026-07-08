@@ -484,7 +484,7 @@ console.log(
 scrapeGoogleMapsReviewsIncremental();
 
 // Setup Cron Job: '0 0 */3 * *' -> Run at 00:00 every 3rd day of the month '*/2 * * * *'
-cron.schedule("*/2 * * * *", () => {
+cron.schedule("*/6 * * * *", () => {
   console.log(`\n\n--- Cron Triggered at ${new Date().toISOString()} ---`);
   scrapeGoogleMapsReviewsIncremental();
 });
